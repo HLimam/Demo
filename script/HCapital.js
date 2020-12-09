@@ -7,7 +7,7 @@
     for (let sheet of xl.sheets()) {
         // Fund Entities data
         if (sheet.name() == "ESID") {
-            let fundCompteur = 1;
+            let totoCompteur = 1;
             let companyCompteur = 0;
 
             // Find header row
