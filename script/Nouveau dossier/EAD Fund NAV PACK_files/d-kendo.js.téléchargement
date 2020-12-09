@@ -1,0 +1,2 @@
+/* (c) Domos FS */
+"use strict";!function(){kendo.culture(window.gLanguage);try{for(var e=kendo.dataviz.ui,t=0,o=["Chart","Diagram","Sparkline","StockChart","TreeMap"];t<o.length;t++){e[o[t]].fn.options.theme="blueopal"}}catch(e){console.log("Cannot setup dataviz themes")}try{kendo.ui.NumericTextBox.fn.options.decimals=8}catch(e){console.log("Cannot setup numeric textbox decimals")}}();

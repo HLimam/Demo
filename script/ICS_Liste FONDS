@@ -1,0 +1,174 @@
+"use strict";
+(function() {
+
+    let xl = domos.excel();
+    let objects = domos.objects();
+	let sheet = xl.sheetAt(0);
+    // Fund Entities data
+    let fundCompteur = 0;
+    let ManagementCompanyCompteur = 0;
+    // Find header row
+    let mainIndex = sheet.defaultIndex();
+    // Entities data headers
+	// Tags
+    let entityOnboardingTypeIndex = mainIndex.get("OnboardingType");
+	let entityNomOPCIndex = mainIndex.get("Nomdel'OPC");
+	let entityGroupIndex = mainIndex.get("GROUP");
+	let entityAccountTypeIndex = mainIndex.get("ACCOUNTTYPE");
+	let entityUcIndex = mainIndex.get("UC");
+	let entityIntituleUcIndex = mainIndex.get("INTITULEUC");
+	let entityUgIndex = mainIndex.get("UG");
+	let entityIntituleUgIndex = mainIndex.get("INTITULEUG");
+	let entityInvestmentPolicyIndex = mainIndex.get("INVESTMENTPOLICY");
+	let entityCrmIndex = mainIndex.get("CRM");
+	let entityOpenFundsIndex = mainIndex.get("Open/Closed-endedFunds");
+	let entityDistributionFrequencyIndex = mainIndex.get("DistributionFrequency");
+	let entityProductRegimeIndex = mainIndex.get("PRODUCTREGIME");
+	let entityTypeIndex = mainIndex.get("TYPE");
+	let entityAifmdStatusIndex = mainIndex.get("AIFMDStatus");
+	let entityInternalAIFIndex = mainIndex.get("InternalAIForexternalAIFM");
+	let entitySelfManagedIndex = mainIndex.get("SELF-MANAGEDVSMANCO/AIFM");
+	let entityBalanceFiscalYearIndex = mainIndex.get("BALANCE/ENDOFFISCALYEAR");
+	// Entities
+	let entityNocliNodosIndex = mainIndex.get("NocliNodos");
+	let entityNomCompartimentIndex = mainIndex.get("Nom du compartiment");
+	let entityCreation1NavCalculIndex = mainIndex.get("CREATION/1ST NAV CALCULATION");
+	let entityCountryResidenceIndex = mainIndex.get("COUNTRY OF RESIDENCE");
+	let entityDomiciliationAgentIndex = mainIndex.get("DOMICILIATION AGENT");
+	let entityRegistrarTransferAgentIndex = mainIndex.get("REGISTRAR & TRANSFER AGENT");
+	let entityAdministrativeAgentIndex = mainIndex.get("ADMINISTRATIVE AGENT");
+	let entityDistributionIndex = mainIndex.get("Distribution");
+	let entityPrincipalPayingAgentIndex = mainIndex.get("Principal Paying Agent");
+	let entityNavFrequencyIndex = mainIndex.get("NAV FREQUENCY");
+	let entityNameExternalAIFMIndex = mainIndex.get("Name of the external AIFM");
+	let entityCountryAIFMIndex = mainIndex.get("Country of AIFM");
+	let entityNameMancoAIFMIndex = mainIndex.get("NAME OF MANCO / AIFM");
+	let entityInvestmentManagerIndex = mainIndex.get("INVESTMENT MANAGER");
+	let entityAuditeurIndex = mainIndex.get("AUDITEUR");
+	for (let row of mainIndex.dataRows()) {
+		// Retrieve data
+		//Tags
+		let entityOnboardingType = row.cell(entityOnboardingTypeIndex);
+		let entityNomOPC = row.cell(entityNomOPCIndex);
+		let entityGroup = row.cell(entityGroupIndex);
+		let entityAccountType = row.cell(entityAccountTypeIndex);
+		let entityUc = row.cell(entityUcIndex);
+		let entityIntituleUc = row.cell(entityIntituleUcIndex);
+		let entityUg = row.cell(entityUgIndex);
+		let entityIntituleUg = row.cell(entityIntituleUgIndex);
+		let entityInvestmentPolicy = row.cell(entityInvestmentPolicyIndex);
+		let entityCrm = row.cell(entityCrmIndex);
+		let entityOpenFunds = row.cell(entityOpenFundsIndex);
+		let entityDistributionFrequency = row.cell(entityDistributionFrequencyIndex);
+		let entityProductRegime = row.cell(entityProductRegimeIndex);
+		let entityType = row.cell(entityTypeIndex);
+		let entityAifmdStatus = row.cell(entityAifmdStatusIndex);
+		let entityInternalAIF = row.cell(entityInternalAIFIndex);
+		let entitySelfManaged = row.cell(entitySelfManagedIndex);
+		let entityBalanceFiscalYear = row.cell(entityBalanceFiscalYearIndex);
+		//Entities
+		let entityNocliNodos = row.cell(entityNocliNodosIndex);
+		let entityNomCompartiment = row.cell(entityNomCompartimentIndex);
+		let entityCreation1NavCalcul = util.extractDate(row.cell(entityCreation1NavCalculIndex), "dd.MM.yyyy");
+		let entityCountryResidence = row.cell(entityCountryResidenceIndex);
+		let entityDomiciliationAgent = row.cell(entityDomiciliationAgentIndex);
+		let entityRegistrarTransferAgent = row.cell(entityRegistrarTransferAgentIndex);
+		let entityAdministrativeAgent = row.cell(entityAdministrativeAgentIndex);
+		let entityDistribution = row.cell(entityDistributionIndex);
+		let entityPrincipalPayingAgent = row.cell(entityPrincipalPayingAgentIndex);
+		let entityNavFrequency = row.cell(entityNavFrequencyIndex);
+		let entityNameExternalAIFM = row.cell(entityNameExternalAIFMIndex);
+		let entityCountryAIFM = row.cell(entityCountryAIFMIndex);
+		let entityNameMancoAIFM = row.cell(entityNameMancoAIFMIndex);
+		let entityInvestmentManager = row.cell(entityInvestmentManagerIndex);
+		let entityAuditeur = row.cell(entityAuditeurIndex);
+		// Create entity
+		var entity;
+		// Create Fund
+		if(entityNocliNodos.stringOrNull()!="Refernce" && !entityNomCompartiment.empty()){
+			entity = objects.findOrCreateVehicle(entityNomCompartiment);
+			//entity.masterFeeder("MASTER");
+		}else{
+			continue;
+		}
+		if(entityCreation1NavCalcul){
+			entity.inceptionDate(entityCreation1NavCalcul);
+			entity.launchDate(entityCreation1NavCalcul);
+		}
+		if (!entityCountryResidence.empty()) {
+			let country = domos.inferCountryCodeOrNull(entityCountryResidence.stringOrNull());
+			if (country) {
+				entity.country(country);
+				if (entity.isEntity()) entity.addresses().legal(true).country(country);
+			} else {
+				domos.log().warn("Country " + entityCountryResidence.stringOrNull() + " not supported for entity" + entityNomCompartiment.stringValue());
+			}
+		}
+		if (!entityDomiciliationAgent.empty()) entity.addContact(objects.findOrCreateObjectType(entityDomiciliationAgent, "PROPERTY"),"DOMICILIATION_AGENT");    
+		if (!entityRegistrarTransferAgent.empty()){
+			entity.addContact(objects.findOrCreateObjectType(entityRegistrarTransferAgent, "PROPERTY"),"TRANSFER_AGENT");
+			entity.addContact(objects.findOrCreateObjectType(entityRegistrarTransferAgent, "PROPERTY"),"REGISTRATION_AGENT");
+		}
+		if (!entityAdministrativeAgent.empty()) entity.addContact(objects.findOrCreateObjectType(entityAdministrativeAgent, "PROPERTY"),"ADMINISTRATIVE_AGENT");   
+		if (!entityDistribution.empty()) entity.addContact(objects.findOrCreateObjectType(entityDistribution, "PROPERTY"),"DISTRIBUTOR");  
+		//TODO Verify mapping
+		if (!entityPrincipalPayingAgent.empty()) entity.addContact(objects.findOrCreateObjectType(entityPrincipalPayingAgent, "PROPERTY"),"INVESTOR");   
+		if (!entityInvestmentManager.empty()) entity.addContact(objects.findOrCreateObjectType(entityInvestmentManager, "PROPERTY"),"INVESTOR");   
+		if (!entityAuditeur.empty()) entity.addContact(objects.findOrCreateObjectType(entityAuditeur, "PROPERTY"),"AUDITOR");   
+		if (!entityNameMancoAIFM.empty()) entity.addContact(objects.findOrCreateObjectType(entityNameMancoAIFM, "PROPERTY"),"MANCO");
+		let navFrequency;
+		if (entityNavFrequency.stringOrNull() === "Q") navFrequency = "QUARTERLY";
+		else if (entityNavFrequency.stringOrNull() === "H") navFrequency = "SEMI_ANNUALLY";
+		else if (entityNavFrequency.stringOrNull() === "Y") navFrequency = "ANNUALLY";
+		else if (entityNavFrequency.stringOrNull() === "M") navFrequency = "MONTHLY";
+		else if (entityNavFrequency.stringOrNull() === "D") navFrequency = "DAILY";
+		else if (entityNavFrequency.stringOrNull() === "W") navFrequency = "WEEKLY";
+		if(navFrequency) entity.navFrequency(navFrequency);
+		// Add AIFM
+		if (!entityNameExternalAIFM.empty() && entityNameExternalAIFM.stringOrNull() != "N/A") {
+            let fundManager = objects.findOrCreateObjectType(entityNameExternalAIFM, "MANAGEMENT_COMPANY");
+			if (!entityCountryAIFM.empty()) {
+			let country = domos.inferCountryCodeOrNull(entityCountryAIFM.stringOrNull());
+			if (country) {
+				fundManager.country(country);
+				if (fundManager.isEntity()) fundManager.addresses().legal(true).country(country);
+			} else {
+				domos.log().warn("Country " + entityCountryAIFM.stringOrNull() + " not supported for managment company" + entityNameExternalAIFM.stringValue());
+			}
+		}
+            entity.company(fundManager);
+			ManagementCompanyCompteur += 1;
+        }
+		
+		// Add Reference
+		if (!entityNocliNodos.empty()) entity.customReference("ReferenceNoclinodos", entityNocliNodos);
+		// Add Tags
+		if (!entityOnboardingType.empty()) entity.addTag("onboardingType",entityOnboardingType);       
+		if (!entityNomOPC.empty()) entity.addTag("nomOPC",entityNomOPC);               
+		if (!entityGroup.empty()) entity.addTag("group",entityGroup);                
+		if (!entityAccountType.empty()) entity.addTag("accountType",entityAccountType);          
+		if (!entityUc.empty()) entity.addTag("uc",entityUc);                   
+		if (!entityIntituleUc.empty()) entity.addTag("intituleUc",entityIntituleUc);           
+		if (!entityUg.empty()) entity.addTag("ug",entityUg);                   
+		if (!entityIntituleUg.empty()) entity.addTag("intituleUg",entityIntituleUg);           
+		if (!entityInvestmentPolicy.empty()) entity.addTag("investmentPolicy",entityInvestmentPolicy);     
+		if (!entityCrm.empty()) entity.addTag("crm",entityCrm);                  
+		if (!entityOpenFunds.empty()){
+			if (entityOpenFunds.stringOrNull() == "Open" ) entity.addTag("openFunds","open"); 
+			if (entityOpenFunds.stringOrNull() == "Closed-ended" ) entity.addTag("openFunds","closed"); 
+		}			
+		if (!entityDistributionFrequency.empty()) entity.addTag("distributionFrequency",entityDistributionFrequency);
+		if (!entityProductRegime.empty()) entity.addTag("productRegime",entityProductRegime);        
+		if (!entityType.empty()) entity.addTag("type",entityType);                 
+		if (!entityAifmdStatus.empty()) entity.addTag("aifmdStatus",entityAifmdStatus);          
+		if (!entityInternalAIF.empty()){
+			if (entityInternalAIF.stringOrNull() == "Internal" ) entity.addTag("internalAIF","internal");  
+			if (entityInternalAIF.stringOrNull() == "External" ) entity.addTag("internalAIF","external");  
+		}			
+		if (!entitySelfManaged.empty()) entity.addTag("selfManaged",entitySelfManaged);          
+		if (!entityBalanceFiscalYear.empty()) entity.addTag("balanceFiscalYear",entityBalanceFiscalYear);    
+		fundCompteur += 1;
+    }
+	domos.log().info("Number of fund position is " + fundCompteur);
+	domos.log().info("Number of management company position is " + ManagementCompanyCompteur);
+})();
