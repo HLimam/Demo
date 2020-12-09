@@ -7,7 +7,7 @@
     for (let sheet of xl.sheets()) {
         // Fund Entities data
         if (sheet.name() == "ESID") {
-            let totoCompteur = 1;
+            let Compteur = 1;
             let companyCompteur = 0;
 
             // Find header row
@@ -15,7 +15,7 @@
 
             // Entities data headers
             let entityLevelIndex = mainIndex.get("Level");
-			let entityFIndex = mainIndex.get("F");
+			//let entityFIndex = mainIndex.get("F");
 			let entityL1Index = mainIndex.get("L1");
 			let entityL2Index = mainIndex.get("L2");
 			let entityL3Index = mainIndex.get("L3");
