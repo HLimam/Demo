@@ -18,7 +18,7 @@
 
         // Fund Entities data
         if (sheet.name() == "Entities") {
-            let fundCompteur = 1;
+            let fundCompteur = 0;
             let companyCompteur = 0;
 
             // Find header row
